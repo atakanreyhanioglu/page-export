@@ -5,34 +5,38 @@ const puppeteer = require("puppeteer");
 const app = express()
 
 const fs = require('fs');
-const path = require('path');
-
-
 
 
 app.post('/', bodyParser.json(), async function (req, res) {
-    await screenShot(req.body.url, req.body.width, req.body.height, req.body.path)
-    return res.status(200).json({ success: 'success' })
+    if (!req.body.url) return res.status(401).json({status: 'error' , message: 'Url is required.'})
+    await screenShot(req.body.url, req.body.width, req.body.height, req.body.folder_path, req.body.image_name, req.body.image_extension)
+    return res.status(200).json({ status: 'success' })
 })
 
 app.listen(process.env.POST, `${process.env.HOST}`,function () {
     console.log(`Server is running on PORT=${process.env.POST}`)
 })
 
-// run in a non-headless mode
-async function screenShot (url, width, height, path) {
-    const browser = await puppeteer.launch({
-        headless: false,
-// slows down Puppeteer operations
-        slowMo: 100,
-// open dev tools
-        devtools: true
-    });
-    const page = await browser.newPage();
-    // await page.setViewport({ width, height });
-    await page.goto(url);
-    if (!fs.existsSync('./screenshots')) {
-        fs.mkdirSync('./screenshots')
+async function screenShot (url, width, height, folder_path, image_name, image_extension) {
+    try {
+        const browser = await puppeteer.launch({
+            headless: false,
+            slowMo: 1000,
+            devtools: true
+        });
+        const page = await browser.newPage();
+        if( width && height ) {
+            await page.setViewport({ width, height });
+        }
+        let folderPath = folder_path ? folder_path : './screenshots'
+        await page.goto(url);
+        if (!fs.existsSync(`${folderPath}`)) {
+            fs.mkdirSync(`${folderPath}`)
+        }
+        let extension = image_extension ? image_extension : 'png'
+        let name = image_name ? image_name : `${Date.now()}.${extension}`
+        await page.screenshot({ path:`${folderPath}/${name}` });
+    }catch (e) {
+        console.log(e)
     }
-    await page.screenshot({ path: path ? path : './screenshots/example.png' });
 }
