@@ -39,10 +39,11 @@ const Take = {
             result.image_name = `${folderPath}/${name}`.split('/screenshots/')[1]
             if (fs.existsSync(`${folderPath}/${name}`)) {
                 result.error = 'Unique image name is required.'
+            } else {
+                await page.screenshot({ path:`${folderPath}/${name}` });
             }
-            await page.screenshot({ path:`${folderPath}/${name}` });
             let closeTrigger = browser_close === false ? browser_close : true
-            if(closeTrigger) {
+            if(closeTrigger || result.error) {
                 await browser.close();
                 result.browser_closed = "true"
             }else {
