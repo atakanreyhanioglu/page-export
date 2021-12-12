@@ -41,7 +41,7 @@ const Take = {
                 result.error = 'Unique image name is required.'
             }
             await page.screenshot({ path:`${folderPath}/${name}` });
-            let closeTrigger = browser_close ? browser_close : true
+            let closeTrigger = browser_close === false ? browser_close : true
             if(closeTrigger) {
                 await browser.close();
                 result.browser_closed = "true"
