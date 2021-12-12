@@ -12,7 +12,7 @@ const Take = {
             if( width && height ) {
                 await page.setViewport({ width, height });
             }
-            let folderPath = folder_path ? folder_path : './screenshots'
+            let folderPath = folder_path ? folder_path : `${__dirname}/screenshots`
             await page.goto(url);
             if (!fs.existsSync(`${folderPath}`)) {
                 fs.mkdirSync(`${folderPath}`)
