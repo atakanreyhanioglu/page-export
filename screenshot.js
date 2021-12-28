@@ -1,14 +1,14 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const Take = {
-      screenshot: async (url, width, height, image_name, image_extension, browser_close) => {
+      screenshot: async (url, width, height, image_name, image_extension) => {
         try {
             let result = {
                 screen_info: {}
             }
             let ss_url = url.includes('://') ? url : 'https://' + url
             const browser = await puppeteer.launch({
-                headless: false,
+                headless: true,
                 slowMo: 300,
                 devtools: true
             });
@@ -29,7 +29,7 @@ const Take = {
             }
             let folderPath = `${__dirname}/screenshots`
             result.folder_path = `${__dirname}/screenshots`
-            await page.goto(ss_url);
+            await page.goto(ss_url, { waitUntil: "networkidle2"});
             result.url = `${ss_url}`
             if (!fs.existsSync(`${folderPath}`)) {
                 fs.mkdirSync(`${folderPath}`)
@@ -41,13 +41,6 @@ const Take = {
                 result.error = 'Unique image name is required.'
             } else {
                 await page.screenshot({ path:`${folderPath}/${name}` });
-            }
-            let closeTrigger = browser_close === false ? browser_close : true
-            if(closeTrigger || result.error) {
-                await browser.close();
-                result.browser_closed = "true"
-            }else {
-                result.browser_closed = "false"
             }
             return result
         }catch (e) {

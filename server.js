@@ -8,7 +8,7 @@ const take = require('./screenshot')
 
 app.post('/', express.json(), validation.confirm ,async function (req, res) {
     try {
-        const result = await take.screenshot(req.body.url, req.body.width, req.body.height, req.body.image_name, req.body.image_extension, req.body.browser_close)
+        const result = await take.screenshot(req.body.url, req.body.width, req.body.height, req.body.image_name, req.body.image_extension)
         if(result.error) {
             return res.status(400).json({status: 'error' , message: result.error})
         }
