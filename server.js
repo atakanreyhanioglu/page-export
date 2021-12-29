@@ -8,7 +8,7 @@ const validation = require('./validation');
 const take = require('./screenshot');
 const get = require('./pdf');
 
-app.post('/api/screenshot', express.json(), validation.confirm, async (req, res) => {
+app.post('/api/screenshot', express.json(), validation.screenshot, async (req, res) => {
   try {
     // eslint-disable-next-line max-len
     const result = await take.screenshot(req.body.url, req.body.width, req.body.height, req.body.image_name, req.body.image_extension);
