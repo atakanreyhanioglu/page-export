@@ -5,3 +5,5 @@ screenshots
 *.iml
 .gitignore
 package-lock.json
+/.eslintrc.json
+documents
