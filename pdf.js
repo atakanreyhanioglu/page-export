@@ -9,7 +9,13 @@ const get = {
       };
       let widthOption;
       let heightOption;
+      const folderPath = `${__dirname}/documents`;
+      result.folder_path = `${__dirname}/documents`;
       const ssUrl = url.includes('://') ? url : `https://${url}`;
+      result.url = `${ssUrl}`;
+      if (!fs.existsSync(`${folderPath}`)) {
+        fs.mkdirSync(`${folderPath}`);
+      }
       const browser = await puppeteer.launch({
         headless: true,
       });
@@ -26,18 +32,11 @@ const get = {
         result.screen_info.width = width;
         result.screen_info.height = height;
       }
-      const folderPath = `${__dirname}/documents`;
-      result.folder_path = `${__dirname}/documents`;
       await page.goto(ssUrl, { waitUntil: 'networkidle2' });
-      result.url = `${ssUrl}`;
-      if (!fs.existsSync(`${folderPath}`)) {
-        fs.mkdirSync(`${folderPath}`);
-      }
-      const extension = 'pdf';
-      const documentName = name ? `${name}.${extension}` : `${Date.now()}.${extension}`;
+      const documentName = name ? `${name}.pdf` : `${Date.now()}.pdf`;
       // eslint-disable-next-line prefer-destructuring
       result.name = `${folderPath}/${documentName}`.split('/documents/')[1];
-      if (fs.existsSync(`${folderPath}/${name}`)) {
+      if (fs.existsSync(`${folderPath}/${name}.pdf`)) {
         result.error = 'Unique pdf name is required.';
       } else {
         await page.pdf({ path: `${folderPath}/${name}.pdf`, width: widthOption, height: heightOption });
